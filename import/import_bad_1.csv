@@ -1,0 +1,4 @@
+name,coordinates.x,coordinates.y,realHero,hasToothpick,car.name,mood,impactSpeed,minutesOfWaiting,weaponType
+BadUser1,200,50.5,true,true,BadCar1,CALM,100.0,25.5,HAMMER
+BadUser2,20,-1000.0,false,false,BadCar2,SADNESS,200.5,50.0,RIFLE
+BadUser3,30,250.75,true,true,BadCar3,RAGE,500.0,75.5,MACHINE_GUN

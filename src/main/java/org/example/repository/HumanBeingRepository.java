@@ -31,21 +31,21 @@ public interface HumanBeingRepository extends JpaRepository<HumanBeing, Long> {
     Double getAverageImpactSpeed();
 
     @Query("""
-        SELECT h.id
-        FROM HumanBeing h
-        WHERE h.realHero = true
-          AND h.mood <> :sadMood
-          AND h.id > :lastId
-        ORDER BY h.id
-    """)
+                SELECT h.id
+                FROM HumanBeing h
+                WHERE h.realHero = true
+                  AND h.mood <> :sadMood
+                  AND h.id > :lastId
+                ORDER BY h.id
+            """)
     List<Long> findHeroIdsAfter(@Param("lastId") long lastId, @Param("sadMood") Mood sadMood, Pageable pageable);
 
     @Modifying
     @Query("""
-        UPDATE HumanBeing h
-        SET h.mood = :sadMood
-        WHERE h.id IN :ids
-    """)
+                UPDATE HumanBeing h
+                SET h.mood = :sadMood
+                WHERE h.id IN :ids
+            """)
     int updateMoodByIds(@Param("ids") List<Long> ids, @Param("sadMood") Mood sadMood);
 
 
@@ -69,4 +69,10 @@ public interface HumanBeingRepository extends JpaRepository<HumanBeing, Long> {
 
     @Query("SELECT h FROM HumanBeing h WHERE CAST(h.weaponType AS string) = :value")
     Page<HumanBeing> findByWeaponTypeExact(@Param("value") String value, Pageable pageable);
+
+    @Query("SELECT h FROM HumanBeing h WHERE h.name = :name AND h.coordinates.x = :x AND h.coordinates.y = :y")
+    List<HumanBeing> findByNameAndCoordinates(@Param("name") String name, @Param("x") Integer x, @Param("y") Double y);
+
+    @Query("SELECT h FROM HumanBeing h WHERE h.realHero = true AND h.impactSpeed = :impactSpeed AND h.minutesOfWaiting = :minutesOfWaiting")
+    List<HumanBeing> findByHeroSpeedAndWaiting(@Param("impactSpeed") Float impactSpeed, @Param("minutesOfWaiting") Float minutesOfWaiting);
 }

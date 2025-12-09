@@ -22,6 +22,15 @@ function connectWebSocket() {
                     console.error('Error parsing WebSocket message:', e);
                 }
             });
+
+            stompClient.subscribe('/topic/import-progress', function (message) {
+                try {
+                    const update = JSON.parse(message.body);
+                    handleWebSocketUpdate(update);
+                } catch (e) {
+                    console.error('Error parsing import progress message:', e);
+                }
+            });
         }, function (error) {
             console.error('WebSocket connection error:', error);
             connected = false;
@@ -46,6 +55,11 @@ function handleWebSocketUpdate(update) {
         case 'deleted':
             if (window.currentView === 'table') {
                 loadTable();
+            }
+            break;
+        case 'import_progress':
+            if (window.updateImportProgress) {
+                window.updateImportProgress(data);
             }
             break;
     }

@@ -61,6 +61,21 @@ public class HumanBeingController {
         }
     }
 
+    @DeleteMapping("/all")
+    public ResponseEntity<?> deleteAllHumanBeings(
+            @RequestParam(value = "confirm", required = false) String confirm
+    ) {
+        if (!"YES".equalsIgnoreCase(confirm)) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error",
+                            "To delete ALL HumanBeings, call this endpoint with ?confirm=YES"));
+        }
+
+        humanBeingService.deleteAllHumanBeings();
+        notificationService.notifyAll("deleted", Map.of("all", true));
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping
     public ResponseEntity<?> createHumanBeing(@Valid @RequestBody HumanBeingDTO dto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {

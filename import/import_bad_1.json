@@ -1,0 +1,50 @@
+[
+  {
+    "name": "BadJsonUser1",
+    "coordinates": {
+      "x": 200,
+      "y": 50.5
+    },
+    "realHero": true,
+    "hasToothpick": true,
+    "car": {
+      "name": "BadJsonCar1"
+    },
+    "mood": "CALM",
+    "impactSpeed": 100.0,
+    "minutesOfWaiting": 25.5,
+    "weaponType": "HAMMER"
+  },
+  {
+    "name": "BadJsonUser2",
+    "coordinates": {
+      "x": 20,
+      "y": -1000.0
+    },
+    "realHero": false,
+    "hasToothpick": false,
+    "car": {
+      "name": "BadJsonCar2"
+    },
+    "mood": "SADNESS",
+    "impactSpeed": 200.5,
+    "minutesOfWaiting": 50.0,
+    "weaponType": "RIFLE"
+  },
+  {
+    "name": "BadJsonUser3",
+    "coordinates": {
+      "x": 30,
+      "y": 250.75
+    },
+    "realHero": true,
+    "hasToothpick": true,
+    "car": {
+      "name": "BadJsonCar3"
+    },
+    "mood": "RAGE",
+    "impactSpeed": 500.0,
+    "minutesOfWaiting": 75.5,
+    "weaponType": "MACHINE_GUN"
+  }
+]

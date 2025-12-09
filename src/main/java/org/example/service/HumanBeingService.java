@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional(isolation = Isolation.READ_COMMITTED)
 public class HumanBeingService {
 
     @Autowired
@@ -108,6 +109,27 @@ public class HumanBeingService {
             throw new IllegalArgumentException("Impact speed cannot exceed 345");
         }
 
+        List<HumanBeing> existingByNameAndCoords = humanBeingRepository.findByNameAndCoordinates(
+                entity.getName(), entity.getCoordinates().getX(), entity.getCoordinates().getY());
+
+        if (!existingByNameAndCoords.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "HumanBeing with name '" + entity.getName() + "' and coordinates (" +
+                            entity.getCoordinates().getX() + ", " + entity.getCoordinates().getY() +
+                            ") already exists");
+        }
+
+        if (Boolean.TRUE.equals(entity.getRealHero())) {
+            List<HumanBeing> existingBySpeedAndWaiting = humanBeingRepository.findByHeroSpeedAndWaiting(
+                    entity.getImpactSpeed(), entity.getMinutesOfWaiting());
+
+            if (!existingBySpeedAndWaiting.isEmpty()) {
+                throw new IllegalArgumentException(
+                        "Hero with impactSpeed " + entity.getImpactSpeed() +
+                                " and minutesOfWaiting " + entity.getMinutesOfWaiting() + " already exists");
+            }
+        }
+
         HumanBeing saved = humanBeingRepository.save(entity);
         return mapper.toDTO(saved);
     }
@@ -162,6 +184,27 @@ public class HumanBeingService {
 
         if (existing.getImpactSpeed() != null && existing.getImpactSpeed() > 345) {
             throw new IllegalArgumentException("Impact speed cannot exceed 345");
+        }
+
+        List<HumanBeing> existingByNameAndCoords = humanBeingRepository.findByNameAndCoordinates(
+                existing.getName(), existing.getCoordinates().getX(), existing.getCoordinates().getY());
+
+        if (!existingByNameAndCoords.isEmpty() && existingByNameAndCoords.stream().anyMatch(h -> !h.getId().equals(existing.getId()))) {
+            throw new IllegalArgumentException(
+                    "HumanBeing with name '" + existing.getName() + "' and coordinates (" +
+                            existing.getCoordinates().getX() + ", " + existing.getCoordinates().getY() +
+                            ") already exists");
+        }
+
+        if (Boolean.TRUE.equals(existing.getRealHero())) {
+            List<HumanBeing> existingBySpeedAndWaiting = humanBeingRepository.findByHeroSpeedAndWaiting(
+                    existing.getImpactSpeed(), existing.getMinutesOfWaiting());
+
+            if (!existingBySpeedAndWaiting.isEmpty() && existingBySpeedAndWaiting.stream().anyMatch(h -> !h.getId().equals(existing.getId()))) {
+                throw new IllegalArgumentException(
+                        "Hero with impactSpeed " + existing.getImpactSpeed() +
+                                " and minutesOfWaiting " + existing.getMinutesOfWaiting() + " already exists");
+            }
         }
 
         HumanBeing updated = humanBeingRepository.save(existing);
@@ -266,6 +309,10 @@ public class HumanBeingService {
         }
         humanBeingRepository.saveAll(heroesWithoutCar);
         return heroesWithoutCar.size();
+    }
+
+    public void deleteAllHumanBeings() {
+        humanBeingRepository.deleteAll();
     }
 
     public List<Car> getAllCars() {

@@ -12,4 +12,7 @@ public interface CarRepository extends JpaRepository<Car, Long> {
     Optional<Car> findById(Long id);
 
     List<Car> findAll();
+
+    @org.springframework.data.jpa.repository.Query("SELECT c FROM Car c WHERE c.name = :name")
+    Optional<Car> findByName(@org.springframework.data.repository.query.Param("name") String name);
 }
