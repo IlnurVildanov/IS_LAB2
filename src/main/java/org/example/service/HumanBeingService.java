@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -236,16 +238,23 @@ public class HumanBeingService {
     }
 
     public HumanBeing deleteOneByWeaponType(WeaponType weaponType) {
-        List<HumanBeing> found = humanBeingRepository.findByWeaponType(weaponType);
-        if (!found.isEmpty()) {
+        try {
+            List<HumanBeing> found = humanBeingRepository.findByWeaponType(weaponType);
+            if (found.isEmpty()) {
+                return null;
+            }
+
             HumanBeing toDelete = found.get(0);
             HumanBeing result = new HumanBeing();
             result.setId(toDelete.getId());
             result.setName(toDelete.getName());
             result.setWeaponType(toDelete.getWeaponType());
+
             humanBeingRepository.deleteById(toDelete.getId());
+
             return result;
-        } else {
+
+        } catch (EmptyResultDataAccessException | ObjectOptimisticLockingFailureException e) {
             return null;
         }
     }

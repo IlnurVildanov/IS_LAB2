@@ -48,7 +48,7 @@ async function loadTable() {
                 <td>${hb.weaponType || 'null'}</td>
                 <td>
                     <button class="btn btn-primary btn-small" onclick="viewHumanBeing(${hb.id})">View</button>
-                    <button class="btn btn-primary btn-small" onclick="editHumanBeing(${hb.id})">Edit</button>
+                    <button class="btn btn-secondary btn-small" onclick="editHumanBeing(${hb.id})">Edit</button>
                     <button class="btn btn-danger btn-small" onclick="deleteHumanBeing(${hb.id})">Delete</button>
                 </td>
             `;

@@ -44,7 +44,11 @@ document.addEventListener('DOMContentLoaded', function () {
         currentUserName = userName;
         currentIsAdmin = isAdmin;
 
-        await uploadMultipleFiles(selectedFiles, userName, isAdmin);
+        if (selectedFiles.length === 1) {
+            await uploadSingleFile(selectedFiles[0], userName, isAdmin);
+        } else {
+            await uploadMultipleFiles(selectedFiles, userName, isAdmin);
+        }
 
         selectedFiles = [];
         fileInput.value = '';
@@ -75,6 +79,38 @@ document.addEventListener('DOMContentLoaded', function () {
         uploadBtn.disabled = selectedFiles.length === 0;
     };
 });
+
+async function uploadSingleFile(file, userName, isAdmin) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('userName', userName);
+    formData.append('isAdmin', isAdmin);
+
+    try {
+        const response = await fetch('/api/import/upload', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Upload failed');
+        }
+
+        const result = await response.json();
+
+        const importId = result.importId;
+        const fileName = result.fileName || file.name;
+
+        if (importId) {
+            createProgressElement(importId, fileName);
+            startPolling(importId);
+        }
+    } catch (error) {
+        console.error('Upload error:', error);
+        alert('Upload failed: ' + error.message);
+    }
+}
 
 async function uploadMultipleFiles(files, userName, isAdmin) {
     const formData = new FormData();

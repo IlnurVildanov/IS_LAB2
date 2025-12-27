@@ -1,5 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('delete-by-weapon-btn').addEventListener('click', async function () {
+        const btn = this;
+        if (btn.disabled) return;
+        btn.disabled = true;
+
         const weaponType = document.getElementById('weapon-type-select').value;
         const resultDiv = document.getElementById('delete-by-weapon-result');
 
@@ -30,10 +34,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 const errorMsg = error.error || error.message || 'Failed to delete';
                 resultDiv.innerHTML = `<div style="color: #ff0000; margin-top: 10px;">Error: ${errorMsg}</div>`;
             }
+        } finally {
+            btn.disabled = false;
         }
     });
 
-    document.getElementById('avg-speed-btn').addEventListener('click', async function () {
+document.getElementById('avg-speed-btn').addEventListener('click', async function () {
         try {
             const result = await apiService.getAverageImpactSpeed();
             document.getElementById('avg-speed-result').innerHTML =
